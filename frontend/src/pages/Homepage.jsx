@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-import Footer from "../components/layout/Footer";
-import SideMenu from "../components/layout/SideMenu";
-import MainArea from "../components/layout/MainArea";
+import Footer from "./layout/Footer";
+import SideMenu from "./layout/SideMenu";
+import MainArea from "./layout/MainArea";
 
 import "../css/pages/HomePage.css";
 
