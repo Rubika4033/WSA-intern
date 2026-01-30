@@ -23,5 +23,7 @@ app.use(
 // });
 app.use("/api/song",songRouter);
 app.use("/api/auth",router);
+
+
 app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
 
