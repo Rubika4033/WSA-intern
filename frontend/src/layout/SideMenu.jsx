@@ -5,8 +5,35 @@ import logo from "../../assets/wsa-logo.jpg";
 import "../../css/sidemenu/SideMenu.css";
 import { CiUser } from "react-icons/ci";
 import { AiOutlineHome, AiOutlineSearch, AiOutlineHeart } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import {openAuthModel} from "../../redux/slices/uiSlice";
 
-const SideMenu = ({ setView, view }) => {
+const SideMenu = ({ setView, view ,onOpenEditProfile}) => {
+  const dispatch= useDispatch();
+  const {user,isAuthenticated} = useSelector((state) => state.auth);
+
+   const disPlayUser={
+    name:user?.name || "Guest",
+    avatar: user?.avatar || "",
+   };
+
+    const handleSearchClick =() =>{
+      if(!isAuthenticated){
+        dispatch(openAuthModel("login"));
+        return;
+      }
+      setView("search");
+    };
+
+    const handleFavouriteClick= () =>{
+      if(!isAuthenticated){
+        dispatch(openAuthModel("login"));
+        return;
+      }
+      setView("favourite");
+    };
+
+  
   const getNavBtnClass = (item) =>
     `sidemenu-nav-btn ${view === item ? "active" : ""}`;
   return (
@@ -57,13 +84,16 @@ const SideMenu = ({ setView, view }) => {
           </div>
 
           <div className="sidemenu-username-wrapper">
-            <div className="sidemenu-username">Guest</div>
+            <div className="sidemenu-username">{disPlayUser.name}</div>
           </div>
-          <div className="settings-container">
-            <button type="button" className="sidemenu-settings-btn">
+          {isAuthenticated && (
+            <div className="settings-container">
+              <button type="button" className="sidemenu-settings-btn"
+              onClick={onOpenEditProfile}>
               <IoIosSettings size={20} />
             </button>
           </div>
+               )}
         </div>
       </aside>
     </>

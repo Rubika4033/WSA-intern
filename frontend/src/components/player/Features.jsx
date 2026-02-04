@@ -5,44 +5,86 @@ import { RiLoopRightLine } from "react-icons/ri";
 
 import "../../css/footer/Feature.css";
 
-const Features = () => {
+const Features = ({playerState,playerFeatures}) => {
   // static UI state
-  const isMuted = false;
-  const shuffleEnabled = false;
-  const loopEnabled = false;
-  const playbackSpeed = 1;
-  const volume = 50;
+  // const isMuted = false;
+  // const shuffleEnabled = false;
+  // const loopEnabled = false;
+  // const playbackSpeed = 1;
+  // const volume = 50;
+const {isMuted ,loopEnabled,shuffleEnabled,playbackSpeed,volume}=
+  playerState;
+  const {
+    onToggleMute,
+    onToggleLoop,
+    onToggleShuffle,
+    onChangeVolume,
+    onChangeSpeed,
+  }= playerFeatures;
 
+
+  const handleSpeedChange=(e) =>{
+    const value= Number(e.target.value)
+      onChangeSpeed(value)
+  }
+  const handleVolumeChange=(e) =>{
+    const value= Number(e.target.value);
+    const normalized =value /100;
+    onChangeVolume(normalized);
+  }
+  
   return (
+    <>
     <div className="features-root">
       <div className="features-row">
         {/* Mute */}
-        <button className="features-btn" aria-label="mute">
+        <button className="features-btn " aria-label={isMuted ? "unmute" : "mute"}
+        onClick={onToggleMute
+
+        }>
+          {isMuted ? (
+            <IoVolumeMuteOutline color="#a855f7" size={26} />
+          ) : (
+            <IoVolumeHighOutline color="#a855f7" size={26} />
+          )}
           <IoVolumeHighOutline color="#a855f7" size={26} />
         </button>
 
         {/* Shuffle */}
-        <button className="features-btn" aria-label="shuffle">
-          <TbArrowsShuffle color="#9ca3af" size={26} />
+        <button  type="button"
+        className="features-btn features-btn-active " 
+        aria-label={shuffleEnabled ? "disable shuffle" : "enable shuffle"}
+        onClick={onToggleShuffle}
+        > 
+          <TbArrowsShuffle color={shuffleEnabled ? "#a885f7" : "#pca3af"} size={26} 
+          />
         </button>
 
         {/* Loop */}
-        <button className="features-btn" aria-label="loop">
-          <RiLoopRightLine color="#9ca3af" size={26} />
+        <button  type="button" className={loopEnabled ? "features-btn features-btn-active" : "features-btn"} aria-label="loop" onClick={onToggleLoop}>
+          <RiLoopRightLine color={loopEnabled ? "#a855f7" : "#9ca3f"}  
+          size={26} />
         </button>
 
         {/* Playback Speed */}
         <label className="features-speed-label">
           <select
+          
+            name="playbackSpeed"
+            id="playbackSpeed"
+            ariel-label="playbackSpeed"
             className="features-speed-select"
+            onChangehandle={handleSpeedChange}
+          
+
             value={playbackSpeed}
             readOnly
           >
-            <option value={0.75}>0.75x</option>
-            <option value={1}>1x</option>
-            <option value={1.25}>1.25x</option>
-            <option value={1.5}>1.5x</option>
-            <option value={2}>2x</option>
+            <option  className="features-speed-select" value={0.75}>0.75x</option>
+            <option  className="features-speed-select" value={1}>1x</option>
+            <option className="features-speed-select" value={1.25}>1.25x</option>
+            <option className="features-speed-select" value={1.5}>1.5x</option>
+            <option className="features-speed-select" value={2}>2x</option>
           </select>
         </label>
       </div>
@@ -53,12 +95,17 @@ const Features = () => {
           type="range"
           min={0}
           max={100}
-          value={volume}
+          value={Math.round((volume || 0) *100)}
+          onChnage={handleVolumeChange}
           className="features-volume-range"
-          readOnly
+          styel ={{
+            background : `linear-gradient(to right,#a855f7 ${volume *100} %,#333 ${volume *100 }%)`,
+          }}
+         
         />
       </div>
     </div>
+    </>
   );
 };
 

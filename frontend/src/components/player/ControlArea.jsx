@@ -7,11 +7,53 @@ import {
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
 import "../../css/footer/ControlArea.css";
+import { useDispatch, useSelector } from "react-redux";
 
-const ControlArea = () => {
-  const isPlaying = false;
-  const currentTime = 0;
-  const duration = 180;
+const ControlArea = ({playerState, playerControls}) => {
+  // const isPlaying = false;
+  // const currentTime = 0;
+  // const duration = 180;
+  const dispatch=useDispatch();
+  const {user,token,isAuthenticated} =useSelector((state) => state.auth); 
+  const {isPLaying,currentTime,duration,currentSong,isLoading} =playerState;
+
+  const { handleTogglePlay, handleNext, handlePrev, handleSeek}=playerControls;
+  const currentSongId= currentSong?.id;
+  
+  const isLiked = Boolean(
+    currentSongId && user?.favorites?.some((fav) => fav.id == currentSong.id ),
+  );
+  const handleLike =async () =>{
+    if(!isAuthenticated || ! currentSong) return;
+  
+  try{
+    const songData={
+      id: currentSong.id,
+      name: currentSong.name,
+      artist_name: currentSong.artist_name,
+      image: currentSong.image,
+      duration: currentSong.duration,
+      audio: currentSong.audio,
+    };
+    const res= await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/api/songs/favourite`,
+      {song:songData},
+      {headers:{Authorization: `Bearer ${token}`}},
+    );
+    dispatch(updateFavourites(res.data));
+  }
+
+    catch(error){
+      console.error("Like failed",error);
+
+
+    }
+  };
+
+  
+  
+  
+  
   return (
     <div className="control-root">
       {/* Control Buttons */}
@@ -21,22 +63,37 @@ const ControlArea = () => {
           aria-label="previous"
           className="control-icon-btn"
         >
-          <TbPlayerTrackPrevFilled color="#a855f7" size={24} />
+          <TbPlayerTrackPrevFilled color="#a855f7" size={24}  />
         </button>
-        <button type="button" aria-label="play" className="control-play-btn">
-          {isPlaying ? (
+        <button type="button" aria-label="play" className="control-play-btn" onClick={handleTogglePlay}>
+          {isLoading ? ( <ImSpinner2 className="animate-spin" color="#a855f7" size={36}/>): isPLaying ?(
             <GiPauseButton color="#a855f7" size={42} />
+
           ) : (
             <FaCirclePlay color="#a855f7" size={42} />
-          )}
+          )
+        }
         </button>
 
-        <button type="button" aria-label="next" className="control-icon-btn">
+        <button type="button" aria-label="next" className="control-icon-btn" onClick={handleNext}>
           <TbPlayerTrackNextFilled color="#a855f7" size={24} />
         </button>
-        <button type="button" aria-label="like" className="control-icon-btn">
-          <FaRegHeart color="#a855f7" size={22} />
+        {isAuthenticated && (
+           <button 
+           type="button" 
+           aria-label="like" 
+           className="control-icon-btn" 
+           onClick={handleLike}
+           >
+            {isLiked ? (
+              <FaHeart color="#ff3c3c" sizes={22}/>
+            ) : (
+              <FaRegHeart color="#a855f7" size={22}  />
+            )}
+          
         </button>
+         )}
+       
       </div>
 
       <div className="control-progress-wrapper">
@@ -46,10 +103,15 @@ const ControlArea = () => {
           max={duration}
           value={currentTime}
           className="control-progress"
+          onChange={(e) => handleSeek(Number(e.target.value))}
+          style={{
+            background : `linear-gradient(to right,#a855f7 ${duration ? (currentTime/duration) * 100:0} % , #333 ${duration ?
+               (currentTime/duration) *100 :0})`,
+          }}
         />
         <div className="control-times">
-          <span>0.00</span>
-          <span>3.00</span>
+          <span>{formatTime(current)}</span>
+          <span>{formatTime(duration)}</span>
         </div>
       </div>
     </div>

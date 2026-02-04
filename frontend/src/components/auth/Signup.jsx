@@ -26,7 +26,16 @@ const Signup = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [base64Image, setBase64Image] = useState("");
   const handleImageChange = (e) => {
-    const file = e.target.files;
+    const file = e.target.files[0];
+      if(!file) return;
+
+      const reader =new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload=() => {
+        setPreviewImage(reader.result);
+        setBase64Image(reader.result);
+      };
     // ... image handling logic ...
   };
 
