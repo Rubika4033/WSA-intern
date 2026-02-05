@@ -1,195 +1,197 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearError, setError, setLoading ,
-  clearError,
-  setUser
-} from "../../redux/slices/authSlice";
+import { clearError, setError, setLoading, setUser } from "../../redux/slices/authSlice";
 import axios from "axios";
 import "../../css/auth/EditProfile.css";
-import {CiUser} from "react-icons/ci";
+import { CiUser } from "react-icons/ci";
 import Input from "../common/Input";
-
+import Modal from "../common/Modal";
 
 const EditProfile = ({ onClose }) => {
   const dispatch = useDispatch();
   const { user, token, isLoading, error } = useSelector((state) => state.auth);
+
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  //Update password
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [previewImage, setPreviewImage] = useState(user?.avatar || "");
   const [base64Image, setBase64Image] = useState("");
+
   useEffect(() => {
-    if (user){
-      setName(user.name ||  "");
+    if (user) {
+      setName(user.name || "");
       setEmail(user.email || "");
       setPreviewImage(user.avatar || "");
     }
-      return <div>EditProfile</div>;
-  },[user]);
+  }, [user]);
 
-  // for imagekit =>rew to base64Image
-
+  // Image change handler
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-      if(!file) return;
+    if (!file) return;
 
-      const reader =new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.onload=() => {
-        setPreviewImage(reader.result);
-        setBase64Image(reader.result);
-      };
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setPreviewImage(reader.result);
+      setBase64Image(reader.result);
     };
+  };
 
-    // submit Handler
-    const handleSubmit =async (e) =>{
-      e.preventDefault();
-      dispatch(clearError());
-       
-      const payload={};
-      if(name && name != user.name) payload.name=name;
-      if(email && email !=user.email) payload.email=email;
-      if(base64Image) payload.avatar=base64Image;
+  // Form submit handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(clearError());
 
-      if(showPasswordFields){
-        if(!currentPassword || !newPassword){
-          dispatch(setError("to change the password,both fields are required"));
-          return;
-        }
-        payload.currentPassword=currentPassword;
-        payload.newPassword=newPassword;
-      }
-      if(Object.keys(payload).length == 0){
-        dispatch(setError("/please update atleat one field"));
+    const payload = {};
+    if (name && name !== user.name) payload.name = name;
+    if (email && email !== user.email) payload.email = email;
+    if (base64Image) payload.avatar = base64Image;
+
+    if (showPasswordFields) {
+      if (!currentPassword || !newPassword) {
+        dispatch(setError("To change the password, both fields are required"));
         return;
       }
-      dispatch(setLoading(true));
-      const storeToken=token || localStorage.getItem("token");
-      try{
-        const response =await axios.patch(
-          `${import.meta.env.VITE_BASE_URL}/api/auth/profile`,
-          payload,{
-            Headers:{
-              Authorization: `Bearer ${token}`,
-            },
+      payload.currentPassword = currentPassword;
+      payload.newPassword = newPassword;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      dispatch(setError("Please update at least one field"));
+      return;
+    }
+
+    dispatch(setLoading(true));
+
+    const storeToken = token || localStorage.getItem("token");
+
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_BASE_URL}/api/auth/profile`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${storeToken}`,
           },
-        );
-    
-      const data=response.data || {};
-      dispatch(setUser({user:data.user,token:token || lacalStorage.getItem("token")}));
-      if(onClose){
+        }
+      );
+
+      const data = response.data || {};
+      dispatch(setUser({ user: data.user, token: storeToken }));
+
+      if (onClose) {
         dispatch(clearError());
         onClose();
       }
-      console.log("Profile upDated!");
-      }
-      catch(error){
-        let serverMessage= 
-        error?.response?.data?. message || error?.response?.data?.error;
 
-        dispatch(
-          setError(serverMessage || "Profile update failed! PLease try again"),
-        );
-      }
-      finally{
-        dispatch(setLoading(false));
+      console.log("Profile updated!");
+    } catch (error) {
+      const serverMessage =
+        error?.response?.data?.message || error?.response?.data?.error;
+      dispatch(setError(serverMessage || "Profile update failed! Please try again"));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-      }
-    };
-
-    return(
+  return (
+    <Modal onClose={onClose}>
       <div className="editprofile-wrapper">
-        <h3 className="edit-profile-title"> Edit Profile</h3>
-        <p> Update your account Details</p>
+        <h3 className="edit-profile-title">Edit Profile</h3>
+        <p>Update your account details</p>
 
-        <from className="editprofile-from" onSubmit={handleSubmit}>
+        <form className="editprofile-form" onSubmit={handleSubmit}>
           {!showPasswordFields && (
             <>
-            <div className="profile-image-container">
-              {previewImage ?(
-                <img 
-                src={previewImage}
-                alt="profile"
-                className="profile-image"
-                />
-              ) :(
-                <div className="profile-placeholder">
-                  <CiUser size={40}/>
-
-                </div>
-              )}
-              <label className="image-upload-icon">
-
-                <input
-                  type="file"
-                  accept="image/?"
-                  hidden onChange={handleImageChange}
-                />
-              </label>
+              <div className="profile-image-container">
+                {previewImage ? (
+                  <img src={previewImage} alt="profile" className="profile-image" />
+                ) : (
+                  <div className="profile-placeholder">
+                    <CiUser size={40} />
+                  </div>
+                )}
+                <label className="image-upload-icon">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleImageChange}
+                  />
+                </label>
               </div>
-              <Input label={"Name"} type={"text"} placeholder={"UPDATE your name"}
+
+              <Input
+                label="Name"
+                type="text"
+                placeholder="Update your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-              <Input label={"Email"} type={"text"} placeholder={"UPDATE your email"}
-                value={name}
+
+              <Input
+                label="Email"
+                type="text"
+                placeholder="Update your email"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              </>
-
-
+            </>
           )}
+
           {showPasswordFields && (
             <>
-              <Input 
-                label={"current Password"}
-                type={"password"}
-                placeholder={"Enter current password"}
+              <Input
+                label="Current Password"
+                type="password"
+                placeholder="Enter current password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
               />
 
-              <Input 
-                label={"New Password"}
-                type={"password"}
-                placeholder={"Enter New password"}
+              <Input
+                label="New Password"
+                type="password"
+                placeholder="Enter new password"
                 value={newPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
+                onChange={(e) => setNewPassword(e.target.value)}
               />
             </>
           )}
+
           {error && <div className="editprofile-error">{error}</div>}
 
           <button
             type="button"
             className="editprofile-password-toggle"
             onClick={() => setShowPasswordFields(!showPasswordFields)}
-            >
-              {showPasswordFields ? "cancel Password Change " : "Change Password"}
+          >
+            {showPasswordFields ? "Cancel Password Change" : "Change Password"}
+          </button>
 
-            </button>
-            <div className="editprofile-actions">
-              <button type="button"
-              className="edditprofile-btn-cancel"
+          <div className="editprofile-actions">
+            <button
+              type="button"
+              className="editprofile-btn-cancel"
               onClick={onClose}
               disabled={isLoading}
-              >
-                Cancel
+            >
+              Cancel
+            </button>
 
-              </button>
-              <button type="submit" className="editprofile-btn-submit"
-               > {isLoading ? "Saving ...":"Save Changes"}</button>
-            </div>
-        </from>
+            <button type="submit" className="editprofile-btn-submit">
+              {isLoading ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </form>
       </div>
-    );
-   
-
-  
+    </Modal>
+  );
 };
+
 export default EditProfile;
+
 

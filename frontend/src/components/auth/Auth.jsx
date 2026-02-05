@@ -9,6 +9,8 @@ import Modal from "../common/Modal";
 
 const Auth = () => {
     const dispatch = useDispatch();
+
+    
     const { isAuthenticated } = useSelector((state) => state.auth);
     const { authModalOpen, authMode } = useSelector((state) => state.ui);
 
@@ -29,7 +31,7 @@ const Auth = () => {
                         className="auth-btn login"
                         onClick={() => {
                             dispatch(clearError());
-                            dispatch(openAuthModal("Login"));
+                            dispatch(openAuthModal("login"));
                         }}
                     >
                         Login

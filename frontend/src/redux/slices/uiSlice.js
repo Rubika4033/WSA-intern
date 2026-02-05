@@ -1,6 +1,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 import authReducer from "./authSlice"; 
+import uiReducer from "./uiSlice"; 
 
 const uiSlice = createSlice({
   name: "ui",
@@ -21,6 +22,7 @@ const uiSlice = createSlice({
       state.authMode = action.payload;
     },
   },
+  
 });
 
 export const { openAuthModal, closeAuthModal, switchAuthMode } = uiSlice.actions;

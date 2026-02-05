@@ -2,12 +2,15 @@ import React from "react";
 import { GiPauseButton } from "react-icons/gi";
 import { FaCirclePlay } from "react-icons/fa6";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import {
-  TbPlayerTrackNextFilled,
-  TbPlayerTrackPrevFilled,
+import {TbPlayerTrackNextFilled,
+TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
+import { ImSpinner2 } from "react-icons/im";
 import "../../css/footer/ControlArea.css";
 import { useDispatch, useSelector } from "react-redux";
+import { updateFavourites } from "../../redux/slices/authSlice";
+// import { formatTime } from "../../utils/helper";
+import { formatTime } from "@/utils/helper";
 
 const ControlArea = ({playerState, playerControls}) => {
   // const isPlaying = false;
@@ -110,7 +113,7 @@ const ControlArea = ({playerState, playerControls}) => {
           }}
         />
         <div className="control-times">
-          <span>{formatTime(current)}</span>
+          <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
       </div>

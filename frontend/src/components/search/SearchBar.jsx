@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Cisearch} from "react-icons/ci";
+import { CiSearch } from "react-icons/ci";
 import "../../css/search/SearchBar.css";
 import axios  from "axios";
 

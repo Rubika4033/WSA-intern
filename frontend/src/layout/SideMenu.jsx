@@ -1,12 +1,11 @@
 import React from "react";
-
 import { IoIosSettings } from "react-icons/io";
-import logo from "../../assets/wsa-logo.jpg";
-import "../../css/sidemenu/SideMenu.css";
+import logo from "../assets/wsa-logo.jpg";       
+import "../css/sidemenu/SideMenu.css";             
 import { CiUser } from "react-icons/ci";
 import { AiOutlineHome, AiOutlineSearch, AiOutlineHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import {openAuthModel} from "../../redux/slices/uiSlice";
+import { openAuthModal } from "../redux/slices/uiSlice";
 
 const SideMenu = ({ setView, view ,onOpenEditProfile}) => {
   const dispatch= useDispatch();

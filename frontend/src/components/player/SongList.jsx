@@ -1,5 +1,8 @@
 import "../../css/mainArea/SongList.css";
-import { formatTime } from "../utils/helper";
+import { formatTime } from "@/utils/helper";
+
+
+
 
 const SongList = ({ songs,
         onSelectSong,
