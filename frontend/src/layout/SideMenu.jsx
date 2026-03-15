@@ -5,7 +5,8 @@ import "../css/sidemenu/SideMenu.css";
 import { CiUser } from "react-icons/ci";
 import { AiOutlineHome, AiOutlineSearch, AiOutlineHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { openAuthModal } from "../redux/slices/uiSlice";
+// import { openAuthModal } from "../../redux/slices/uiSlice";
+import { openAuthModal } from "@/redux/slices/uiSlice";
 
 const SideMenu = ({ setView, view ,onOpenEditProfile}) => {
   const dispatch= useDispatch();
@@ -18,15 +19,15 @@ const SideMenu = ({ setView, view ,onOpenEditProfile}) => {
 
     const handleSearchClick =() =>{
       if(!isAuthenticated){
-        dispatch(openAuthModel("login"));
+        dispatch(openAuthModal("login"));
         return;
       }
-      setView("search");
+      setView("favourite");
     };
 
     const handleFavouriteClick= () =>{
       if(!isAuthenticated){
-        dispatch(openAuthModel("login"));
+        dispatch(openAuthModal("login"));
         return;
       }
       setView("favourite");

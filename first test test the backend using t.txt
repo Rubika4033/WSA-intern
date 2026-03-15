@@ -1,0 +1,131 @@
+first test test the backend using the POST method :http://localhost:5000/api/auth/signup
+input:
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "123456"
+}
+output:
+========
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "697ccc7df111812b1962f1ca",
+        "name": "Test User",
+        "email": "test@example.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2NjYzdkZjExMTgxMmIxOTYyZjFjYSIsImlhdCI6MTc2OTc4NjQ5MywiZXhwIjoxNzY5NzkwMDkzfQ.j17AlLRF9VvEtE2xLokZ8asl3dyIpVfSNnlkWNnAnXU"
+}
+
+
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "697cce2bf111812b1962f1d3",
+        "name": "RUby ",
+        "email": "ruby@gmail.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2NjZTJiZjExMTgxMmIxOTYyZjFkMyIsImlhdCI6MTc2OTc4NjkyMywiZXhwIjoxNzY5NzkwNTIzfQ.8j8X0VFqp_9rNb48mShlRteYTVESfH97g92rMuqqkuM"
+}
+===
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "697cdf90448f44efc154ec18",
+        "name": "suganthi",
+        "email": "sugu@gmail.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2NkZjkwNDQ4ZjQ0ZWZjMTU0ZWMxOCIsImlhdCI6MTc2OTc5MTM3NywiZXhwIjoxNzY5Nzk0OTc3fQ.fPQ911mm550Q6vi4kUj4X87_a9kjkS_YzwMt6a3fnmI"
+}
+=========
+POSt login:
+http://localhost:5000/api/auth/login
+
+post singnup:
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "69858396d4e37c2899b66c16",
+        "name": "Ruby",
+        "email": "test123@example.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODU4Mzk2ZDRlMzdjMjg5OWI2NmMxNiIsImlhdCI6MTc3MDM1NzY1NCwiZXhwIjoxNzcwMzYxMjU0fQ.KjFT4o088rurbCHdPgzPXTGSOYTHJG8gYA_1C7OHALs"
+}
+===
+
+{
+  "name": "Ruby",
+  "email": "test123@example.com",
+  "password": "123456"
+}
+============================
+login new user ans singnup
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "6985ebe2f9ccdf53aa910d83",
+        "name": "Mahesh",
+        "email": "mahesh@.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODVlYmUyZjljY2RmNTNhYTkxMGQ4MyIsImlhdCI6MTc3MDM4NDM1NCwiZXhwIjoxNzcwNDcwNzU0fQ.ohd1t-t0zMPPWVDErmeasW3giE-8KRVHVOXUf0JXujo"
+}
+=======
+{
+  "name": "Mahesh",
+  "email": "mahesh@.com",
+  "password": "123456"
+=====
+login
+{
+email": "mahesh@.com",
+  "password": "123456"
+
+}
+=======================
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "6985fd36ddf1acccbc23475d",
+        "name": "Rupika",
+        "email": "rupika200518@gmail.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODVmZDM2ZGRmMWFjY2NiYzIzNDc1ZCIsImlhdCI6MTc3MDM4ODc5MSwiZXhwIjoxNzcwNDc1MTkxfQ.q8BLmDTT_cDeHLQdW-4JvvcKuhuuCjVrlElIyzdgsuk"
+}
+=======
+{
+  "name": "Rupika",
+  "email": "rupika200518@gmail.com",
+  "password": "123456"
+}
+=======
+forget password 
+{
+    "message": "Password reset email sent for testing",
+    "token": "0119b06a4932a506e2d00ed128d5001a804745b0d543cb4e5280fbe5566dac1e",
+    "resetUrl": "http://localhost:5173/reset-password/0119b06a4932a506e2d00ed128d5001a804745b0d543cb4e5280fbe5566dac1e"
+}
+====
+token for reset pass for rubika
+db38af5dca67c778fd4159653cd203eb735b207b61aa25bfe88f056adf1ea10d
+======{
+    "email": "rupika200518@gmail.com",
+    "password": "111111"
+
+}
+===============
+{
+    "message": "User created successfully",
+    "user": {
+        "id": "698705b0f8c11a764fc13369",
+        "name": "Hema",
+        "email": "latha@.com",
+        "avatar": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwNWIwZjhjMTFhNzY0ZmMxMzM2OSIsImlhdCI6MTc3MDQ1NjQ5NiwiZXhwIjoxNzcwNTQyODk2fQ._41HoyRv3dncIA1RwDidnpgn0UD7ar517TQnUCBn2jY"
+}

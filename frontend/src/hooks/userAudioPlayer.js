@@ -1,4 +1,4 @@
-import { useReducer, useState, useRef } from "react";
+import { useReducer, useState, useRef, useEffect } from "react";
 
 const initialAudioState = {
   isPlaying: false,
@@ -13,7 +13,6 @@ const initialAudioState = {
   currentTime: 0,
 };
 
-// Reducer
 function audioReducer(state, action) {
   switch (action.type) {
     case "LOADING":
@@ -35,7 +34,7 @@ function audioReducer(state, action) {
     case "SET_PLAYBACK_SPEED":
       return { ...state, playbackSpeed: action.payload };
     case "SET_CURRENT_TRACK":
-      return { ...state, currentIndex: action.payload.index, currentSong: action.payload.song };
+      return { ...state, currentIndex: action.payload.index, currentSong: action.payload.song, currentTime: 0 };
     case "SET_CURRENT_TIME":
       return { ...state, currentTime: action.payload };
     default:
@@ -43,30 +42,60 @@ function audioReducer(state, action) {
   }
 }
 
-const useAudioPlayer = (songs) => {
+const useAudioPlayer = (playlist) => {
   const [audioState, dispatch] = useReducer(audioReducer, initialAudioState);
   const [duration, setDuration] = useState(0);
   const previousVolumeRef = useRef(1);
-  const audioRef = useRef(null);
+  const audioRef = useRef(new Audio());
 
-  // Play a song at a specific index
-  const playSongAtIndex = (index) => {
-    if (!songs || songs.length === 0) return;
-    if (index < 0 || index >= songs.length) return;
-
-    const song = songs[index];
-    dispatch({ type: "SET_CURRENT_TRACK", payload: { index, song } });
-    dispatch({ type: "SET_CURRENT_TIME", payload: 0 });
-
+  useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audioState.currentSong) return;
 
+    audio.src = audioState.currentSong.audio;
+    audio.currentTime = 0;
     audio.load();
+    audio.volume = audioState.volume;
+    audio.muted = audioState.isMuted;
     audio.playbackRate = audioState.playbackSpeed;
+
     audio
       .play()
       .then(() => dispatch({ type: "PLAY" }))
-      .catch((error) => console.error("PLAY ERROR", error));
+      .catch((err) => console.error("PLAY ERROR", err));
+
+    const timeUpdate = () => dispatch({ type: "SET_CURRENT_TIME", payload: audio.currentTime });
+    const loadedMetadata = () => setDuration(audio.duration || 0);
+    const ended = () => {
+      if (audioState.loopEnabled) {
+        playSongAtIndex(audioState.currentIndex);
+      } else {
+        handleNext();
+      }
+    };
+
+    audio.addEventListener("timeupdate", timeUpdate);
+    audio.addEventListener("loadedmetadata", loadedMetadata);
+    audio.addEventListener("ended", ended);
+
+    return () => {
+      audio.removeEventListener("timeupdate", timeUpdate);
+      audio.removeEventListener("loadedmetadata", loadedMetadata);
+      audio.removeEventListener("ended", ended);
+    };
+  }, [audioState.currentSong, audioState.loopEnabled]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = audioState.volume;
+    audio.muted = audioState.isMuted;
+    audio.playbackRate = audioState.playbackSpeed;
+  }, [audioState.volume, audioState.isMuted, audioState.playbackSpeed]);
+
+  const playSongAtIndex = (index) => {
+    if (!playlist || playlist.length === 0 || index < 0 || index >= playlist.length) return;
+    dispatch({ type: "SET_CURRENT_TRACK", payload: { index, song: playlist[index] } });
   };
 
   const handleTogglePlay = () => {
@@ -74,10 +103,7 @@ const useAudioPlayer = (songs) => {
     if (!audio) return;
 
     if (audio.paused) {
-      audio
-        .play()
-        .then(() => dispatch({ type: "PLAY" }))
-        .catch((e) => console.error("Play error", e));
+      audio.play().then(() => dispatch({ type: "PLAY" })).catch(console.error);
     } else {
       audio.pause();
       dispatch({ type: "PAUSE" });
@@ -85,71 +111,46 @@ const useAudioPlayer = (songs) => {
   };
 
   const handleNext = () => {
-    if (!songs.length) return;
-    if (audioState.currentIndex === null) {
-      playSongAtIndex(0);
-      return;
-    }
-
-    if (audioState.shuffleEnabled && songs.length > 1) {
+    if (!playlist.length) return;
+    if (audioState.shuffleEnabled && playlist.length > 1) {
       let randomIndex = audioState.currentIndex;
       while (randomIndex === audioState.currentIndex) {
-        randomIndex = Math.floor(Math.random() * songs.length);
+        randomIndex = Math.floor(Math.random() * playlist.length);
       }
       playSongAtIndex(randomIndex);
       return;
     }
-
-    const nextIndex = (audioState.currentIndex + 1) % songs.length;
+    const nextIndex = audioState.currentIndex === null ? 0 : (audioState.currentIndex + 1) % playlist.length;
     playSongAtIndex(nextIndex);
   };
 
+  // const handlePrev = () => {
+  //   if (!playlist.length) return;
+  //   const prevIndex = audioState.currentIndex === null ? 0 : (audioState.currentIndex - 1 + playlist.length) % playlist.length;
+  //   playSongAtIndex(prevIndex);
+  // };
   const handlePrev = () => {
-    if (!songs.length) return;
-    if (audioState.currentIndex === null) {
-      playSongAtIndex(0);
-      return;
+  if (!playlist.length) return;
+
+  if (audioState.shuffleEnabled && playlist.length > 1) {
+    // Pick a random index different from current
+    let randomIndex = audioState.currentIndex;
+    while (randomIndex === audioState.currentIndex) {
+      randomIndex = Math.floor(Math.random() * playlist.length);
     }
+    playSongAtIndex(randomIndex);
+    return;
+  }
 
-    const prevIndex = (audioState.currentIndex - 1 + songs.length) % songs.length;
-    playSongAtIndex(prevIndex);
-  };
+  // Normal previous behavior with wrap-around
+  const prevIndex =
+    audioState.currentIndex === null
+      ? 0
+      : (audioState.currentIndex - 1 + playlist.length) % playlist.length;
 
-  // Audio event handlers
-  const handleTimeUpdate = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  playSongAtIndex(prevIndex);
+};
 
-    dispatch({ type: "SET_CURRENT_TIME", payload: audio.currentTime || 0 });
-  };
-
-  const handleLoadMetadata = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    setDuration(audio.duration || 0);
-    audio.playbackRate = audioState.playbackSpeed;
-    audio.volume = audioState.volume;
-    audio.muted = audioState.isMuted;
-  };
-
-  const handleEnded = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (audioState.loopEnabled) {
-      audio
-        .play()
-        .then(() => {
-          dispatch({ type: "PLAY" });
-          dispatch({ type: "SET_CURRENT_TIME", payload: 0 });
-        })
-        .catch((e) => console.error("Replay error", e));
-      return;
-    }
-
-    handleNext();
-  };
 
   const handleToggleMute = () => {
     const audio = audioRef.current;
@@ -173,27 +174,17 @@ const useAudioPlayer = (songs) => {
   const handleToggleLoop = () => dispatch({ type: "TOGGLE_LOOP" });
   const handleToggleShuffle = () => dispatch({ type: "TOGGLE_SHUFFLE" });
 
-  const handleChangeSpeed = (newSpeed) => {
-    const audio = audioRef.current;
-    dispatch({ type: "SET_PLAYBACK_SPEED", payload: newSpeed });
-    if (audio) audio.playbackRate = newSpeed;
+  const handleChangeSpeed = (newSpeed) => dispatch({ type: "SET_PLAYBACK_SPEED", payload: newSpeed });
+  const handleChangeVolume = (newVolume) => {
+    dispatch({ type: "SET_VOLUME", payload: newVolume });
+    dispatch({ type: newVolume === 0 ? "MUTE" : "UNMUTE" });
   };
 
-  const handleChangeVolume = (newVolume) => {
+  const handleSeek = (time) => {
     const audio = audioRef.current;
-    if (newVolume > 0) previousVolumeRef.current = newVolume;
-
-    dispatch({ type: "SET_VOLUME", payload: newVolume });
     if (!audio) return;
-
-    audio.volume = newVolume;
-    if (newVolume === 0) {
-      audio.muted = true;
-      dispatch({ type: "MUTE" });
-    } else if (audioState.isMuted) {
-      audio.muted = false;
-      dispatch({ type: "UNMUTE" });
-    }
+    audio.currentTime = time;
+    dispatch({ type: "SET_CURRENT_TIME", payload: time });
   };
 
   return {
@@ -213,14 +204,12 @@ const useAudioPlayer = (songs) => {
     handleTogglePlay,
     handleNext,
     handlePrev,
-    handleTimeUpdate,
-    handleLoadMetadata,
-    handleEnded,
     handleToggleMute,
     handleToggleLoop,
     handleToggleShuffle,
     handleChangeSpeed,
     handleChangeVolume,
+    handleSeek,
   };
 };
 

@@ -113,24 +113,45 @@ const forgetPassword = async (req, res) => {
         const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
         user.resetPasswordToken = hashedToken;
-        user.resetPasswordTokenExpires = Date.now() + 10 * 60 * 1000;
+        user.resetPasswordTokenExpires = Date.now() + 10 * 60 * 1000; // 10 min
         await user.save();
 
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        
+         if (process.env.SEND_EMAIL === "true") {
+      await sendMail({
+        to: user.email,
+        subject: "Reset your password",
+        html: `
+          <h3>Password Reset</h3>
+          <p>Click the link below to reset your password</p>
+          <a href="${resetUrl}">${resetUrl}</a>
+          <p>This link expires in 10 minutes</p>
+        `,
+      });
 
-        await sendMail({
-            to: user.email,
-            subject: "Reset your password",
-            html: `
-                <h3>Password Reset</h3>
-                <p>Click the link below to reset your password</p>
-                <a href="${resetUrl}">${resetUrl}</a>
-                <p>This link expires in 10 minutes</p>
-            `,
+      return res.status(200).json({ message: "Password reset email sent" });
+    }
+
+
+        // await sendMail({
+        //     to: user.email,
+        //     subject: "Reset your password",
+        //     html: `
+        //         <h3>Password Reset</h3>
+        //         <p>Click the link below to reset your password</p>
+        //         <a href="${resetUrl}">${resetUrl}</a>
+        //         <p>This link expires in 10 minutes</p>
+        //     `,
+        // });
+
+        res.status(200).json({message: "Password reset email sent for testing" ,
+        token: resetToken,
+        resetUrl
         });
 
-        res.status(200).json({ message: "Password reset email sent" });
     } catch (error) {
+        console.error("Forget password error:", error.message);
         res.status(500).json({ message: "Something went wrong" });
     }
 };

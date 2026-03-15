@@ -5,7 +5,7 @@ import connectDB from "./config/connectDB.js";
 import router from "./routes/authRouter.js";
 import songRouter from "./routes/songRouter.js"; 
 
-dotenv.config(".env");
+dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 

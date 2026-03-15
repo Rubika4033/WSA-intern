@@ -1,5 +1,5 @@
 import React from "react";
-import { IoVolumeHighOutline } from "react-icons/io5";
+import { IoVolumeHighOutline , IoVolumeMuteOutline} from "react-icons/io5";
 import { TbArrowsShuffle } from "react-icons/tb";
 import { RiLoopRightLine } from "react-icons/ri";
 
@@ -74,7 +74,7 @@ const {isMuted ,loopEnabled,shuffleEnabled,playbackSpeed,volume}=
             id="playbackSpeed"
             ariel-label="playbackSpeed"
             className="features-speed-select"
-            onChangehandle={handleSpeedChange}
+            onChange={handleSpeedChange}
           
 
             value={playbackSpeed}
@@ -96,9 +96,9 @@ const {isMuted ,loopEnabled,shuffleEnabled,playbackSpeed,volume}=
           min={0}
           max={100}
           value={Math.round((volume || 0) *100)}
-          onChnage={handleVolumeChange}
+          onChange={handleVolumeChange}
           className="features-volume-range"
-          styel ={{
+          style ={{
             background : `linear-gradient(to right,#a855f7 ${volume *100} %,#333 ${volume *100 }%)`,
           }}
          

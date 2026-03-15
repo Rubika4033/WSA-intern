@@ -1,10 +1,11 @@
 import React from "react";
 
-import SongDetail from "../components/player/SongDetail";
-import ControlArea from "../components/player/ControlArea";
-import Features from "../components/player/Features";
+import SongDetail from "@/components/player/SongDetail";
+import ControlArea from "@/components/player/ControlArea";
+import Features from "@/components/player/Features";
 
-import "../css/footer/Footer.css";
+
+// import Footer from "@/layout/Footer";
 
 const Footer = ({ playerState, playerControls, playerFeatures }) => {
   return (

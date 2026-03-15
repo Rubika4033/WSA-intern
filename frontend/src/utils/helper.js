@@ -7,3 +7,4 @@ export const formatTime=(sec) =>{
     .padStart(2,"0");
     return `${minutes}:${seconds}`;
 }
+  

@@ -1,13 +1,14 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import Auth from "../components/auth/Auth";
-import Playlist from "../components/player/Playlist";
-import SongList from "../components/player/SongList";
-import SearchBar from "../components/search/SearchBar";
-import SongGrid from "../components/songs/SongGrid";
 
-import "../css/mainArea/MainArea.css";
+import Auth from "@/components/auth/Auth";
+import Playlist from "@/components/player/Playlist";
+import SongList from "@/components/player/SongList";
+import SearchBar from "@/components/search/SearchBar";
+import SongGrid from "@/components/songs/SongGrid";
+
+// import MainArea from "@/layout/MainArea";
 
 const MainArea = ({
   view,
@@ -16,7 +17,7 @@ const MainArea = ({
   onSelectFavourite,
   songsToDisplay,
   setSearchSongs,
-  onSelectTag, // if needed for Playlist
+  onSelectTag, 
 }) => {
   const auth = useSelector((state) => state.auth);
 

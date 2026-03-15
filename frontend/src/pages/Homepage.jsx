@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Footer from "../layout/Footer";
-import SideMenu from "../layout/SideMenu";
-import MainArea from "../layout/MainArea";
-import "../css/pages/HomePage.css";
+import Footer from "../layout/Footer";         
+import SideMenu from "../layout/SideMenu";     
+import MainArea from "../layout/MainArea";     
+import "../css/pages/HomePage.css"; 
 import { useSelector } from "react-redux";
 import axios from "axios";
 import useAudioPlayer from "../hooks/userAudioPlayer";
@@ -13,6 +13,7 @@ const Homepage = () => {
   const [view, setView] = useState("home");
   const [songs, setSongs] = useState([]);
   const [searchSongs, setSearchSongs] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
   const [openEditProfile, setOpen] = useState(false);
   const auth = useSelector((state) => state.auth);
 
@@ -34,6 +35,7 @@ const Homepage = () => {
     handleTogglePlay,
     handleNext,
     handlePrev,
+    handleSeek,
     handleTimeUpdate,
     handleLoadMetadata,
     handleEnded,
@@ -42,7 +44,7 @@ const Homepage = () => {
     handleToggleShuffle,
     handleChangeSpeed,
     handleChangeVolume,
-  } = useAudioPlayer(songsToDisplay);
+  } = useAudioPlayer(playlist);
 
   const playerState = {
     currentSong,
@@ -60,6 +62,8 @@ const Homepage = () => {
     playSongAtIndex,
     handleTogglePlay,
     handlePrev,
+    handleNext,
+    handleSeek,
   };
 
   const playerFeatures = {
@@ -68,13 +72,15 @@ const Homepage = () => {
     onToggleShuffle: handleToggleShuffle,
     onChangeSpeed: handleChangeSpeed,
     onChangeVolume: handleChangeVolume,
+    
   };
 
   useEffect(() => {
     const fetchInitialSongs = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/songs`);
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/song`);
         setSongs(res.data.results || []);
+        setPlaylist(res.data.results || []); // initialize playlist
       } catch (error) {
         console.error("Error fetching songs", error);
         setSongs([]);
@@ -88,6 +94,7 @@ const Homepage = () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/songs`);
       setSongs(res.data.results || []);
+      setPlaylist(res.data.results || []);
     } catch (error) {
       console.error("Failed to load playlist", error);
       setSongs([]);
@@ -101,12 +108,10 @@ const Homepage = () => {
     if (!favourites.length) return;
 
     const index = favourites.findIndex((fav) => fav.id === song.id);
-    setSongs(favourites);
-    setView("home");
+    if (index === -1) return;
 
-    setTimeout(() => {
-      if (index !== -1) playSongAtIndex(index);
-    }, 0);
+    setPlaylist(favourites);
+    playSongAtIndex(index);
   };
 
   return (
@@ -125,7 +130,7 @@ const Homepage = () => {
           <SideMenu
             setView={setView}
             view={view}
-            OnopenEditprofile={() => setOpen(true)}
+            onOpenEditprofile={() => setOpen(true)}
           />
         </div>
         <div className="homepage-content">
@@ -136,7 +141,7 @@ const Homepage = () => {
             onSelectFavourite={handlePlayFavourite}
             onSelectTag={loadPlayList}
             songsToDisplay={songsToDisplay}
-            setSearchSong={setSearchSongs}
+            setSearchSongs={setSearchSongs}
           />
         </div>
       </div>
@@ -157,4 +162,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-
